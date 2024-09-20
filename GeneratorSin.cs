@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Test
 {
@@ -10,8 +12,6 @@ namespace Test
         private int index = 0;
         private double amplitude { get; set; }
         private double frequency { get; set; }
-        private bool isRunning = true;
-
 
         public GeneratorSin(double amplitude, double frequency)
         {
@@ -19,22 +19,23 @@ namespace Test
             this.frequency = frequency;
         }
 
-        public void Generate()
+        public async Task GenerateDataAsync(CancellationToken token)
         {
-            while (isRunning)
+            int head = 50;
+            while (!token.IsCancellationRequested)
             {
-                for (int i = 0; i < 10; i++)
-                {
+                for (int i = 0; i < head; i++)
                     Data.Add(amplitude * Math.Sin(frequency * (index + i) * 0.1));
+                index += head;
+                try
+                {
+                    await Task.Delay(60, token);
                 }
-                index += 10;
-                Thread.Sleep(50);
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
             }
-        }
-
-        public void Stop()
-        {
-            isRunning = false;
         }
     }
 }

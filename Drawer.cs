@@ -1,5 +1,6 @@
 ﻿using ScottPlot.WPF;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Test
@@ -8,7 +9,6 @@ namespace Test
     {
         private WpfPlot wpfPlot;
         private GeneratorSin dataGenerator;
-        private bool isRunning = true;
 
         public Drawer(WpfPlot wpfPlot, GeneratorSin dataGenerator)
         {
@@ -16,27 +16,32 @@ namespace Test
             this.dataGenerator = dataGenerator;
         }
 
-        public void UpdatePlot()
+        public async Task plotDrawerAsync(CancellationToken token)
         {
-            while (true)
+            while (!token.IsCancellationRequested)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     wpfPlot.Plot.Clear();
                     wpfPlot.Plot.Add.Signal(dataGenerator.Data.ToArray());
+
                     double xCenter = dataGenerator.Data.Count - 50;
                     double xMin = xCenter - 50;
                     double xMax = xCenter + 150;
+
                     wpfPlot.Plot.Axes.SetLimitsX(xMin, xMax);
+
                     wpfPlot.Refresh();
                 });
-                Thread.Sleep(50);
+                try
+                {
+                    await Task.Delay(60, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
             }
-        }
-
-        public void Stop()
-        {
-            isRunning = false;
         }
     }
 }

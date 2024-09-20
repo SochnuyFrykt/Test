@@ -1,4 +1,9 @@
-﻿using System.Threading;
+﻿using ScottPlot;
+using ScottPlot.TickGenerators;
+using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Test
@@ -8,11 +13,9 @@ namespace Test
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GeneratorSin dataGenerator;
-        private Drawer plotUpdater;
-        private Thread dataThread;
-        private Thread plotThread;
-        private bool isCreateThead = false;
+        private GeneratorSin generatorSin;
+        private Drawer plotDrawer;
+        private CancellationTokenSource cancellationTokenSource;
 
         public MainWindow()
         {
@@ -22,15 +25,25 @@ namespace Test
             SinusoidPlot.Plot.XLabel("Время (мс)");
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
             double amplitude, frequency;
             try
             {
                 amplitude = double.Parse(amplitudeInput.Text);
                 frequency = double.Parse(frequencyInput.Text);
-                dataGenerator = new GeneratorSin(amplitude, frequency);
-                plotUpdater = new Drawer(SinusoidPlot, dataGenerator);
+                if (generatorSin == null)
+                {
+                    generatorSin = new GeneratorSin(amplitude, frequency);
+                    plotDrawer = new Drawer(SinusoidPlot, generatorSin);
+                }
+                cancellationTokenSource = new CancellationTokenSource();
+                var token = cancellationTokenSource.Token;
+                try
+                {
+                    await Task.WhenAll(generatorSin.GenerateDataAsync(token), plotDrawer.plotDrawerAsync(token));
+                }
+                catch (OperationCanceledException) { }
             }
             catch
             {
@@ -41,34 +54,11 @@ namespace Test
                     MessageBoxImage.Error
                 );
             }
-            
-            if (isCreateThead == false)
-            {
-                dataThread = new Thread(new ThreadStart(dataGenerator.Generate));
-                dataThread.IsBackground = true;
-                plotThread = new Thread(new ThreadStart(plotUpdater.UpdatePlot));
-                plotThread.IsBackground = true;
-                isCreateThead = true;
-            }
-
-            Start();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            Stop();
-        }
-
-        private void Start()
-        {
-            dataThread.Start();
-            plotThread.Start();
-        }
-
-        private void Stop()
-        {
-            dataThread.Join();
-            plotThread.Join();
+            cancellationTokenSource.Cancel();
         }
     }
 }
