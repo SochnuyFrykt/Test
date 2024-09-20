@@ -8,12 +8,12 @@ namespace Test
     internal class Drawer
     {
         private WpfPlot wpfPlot;
-        private GeneratorSin dataGenerator;
+        private GeneratorSin generatorSin;
 
-        public Drawer(WpfPlot wpfPlot, GeneratorSin dataGenerator)
+        public Drawer(WpfPlot wpfPlot, GeneratorSin generatorSin)
         {
             this.wpfPlot = wpfPlot;
-            this.dataGenerator = dataGenerator;
+            this.generatorSin = generatorSin;
         }
 
         public async Task plotDrawerAsync(CancellationToken token)
@@ -23,9 +23,9 @@ namespace Test
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     wpfPlot.Plot.Clear();
-                    wpfPlot.Plot.Add.Signal(dataGenerator.Data.ToArray());
+                    wpfPlot.Plot.Add.Signal(generatorSin.Data.ToArray());
 
-                    double xCenter = dataGenerator.Data.Count - 50;
+                    double xCenter = generatorSin.Data.Count - 50;
                     double xMin = xCenter - 50;
                     double xMax = xCenter + 150;
 
