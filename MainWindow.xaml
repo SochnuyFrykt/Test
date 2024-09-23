@@ -11,8 +11,8 @@
         <ScottPlot:WpfPlot x:Name="SinusoidPlot" Margin="10,10,195,10"/>
         <Button x:Name="StartButton" Content="Старт" HorizontalAlignment="Left" Margin="591,24,0,0" VerticalAlignment="Top" Height="72" Width="180" Click="StartButton_Click"/>
         <Button x:Name="StopButton" Content="Стоп" HorizontalAlignment="Left" Margin="591,121,0,0" VerticalAlignment="Top" Height="72" Width="180" Click="StopButton_Click"/>
-        <TextBox x:Name="amplitudeInput" HorizontalAlignment="Left" Margin="591,241,0,0" VerticalAlignment="Top" Width="180" Height="30" TextWrapping="Wrap"/>
-        <TextBox x:Name="frequencyInput" HorizontalAlignment="Left" Margin="591,302,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="30"/>
+        <TextBox x:Name="amplitudeInput" HorizontalAlignment="Left" Margin="591,241,0,0" VerticalAlignment="Top" Width="180" Height="30" TextWrapping="Wrap" SelectionChanged="amplitudeInput_SelectionChanged"/>
+        <TextBox x:Name="frequencyInput" HorizontalAlignment="Left" Margin="591,302,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="30" SelectionChanged="frequencyInput_SelectionChanged"/>
         <Label Content="Амплитуда" HorizontalAlignment="Left" Margin="591,215,0,0" VerticalAlignment="Top"/>
         <Label Content="Частота" HorizontalAlignment="Left" Margin="591,276,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.457,0.599"/>
 

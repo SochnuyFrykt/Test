@@ -1,10 +1,4 @@
-﻿using ScottPlot;
-using ScottPlot.TickGenerators;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace Test
 {
@@ -13,52 +7,45 @@ namespace Test
     /// </summary>
     public partial class MainWindow : Window
     {
-        private GeneratorSin generatorSin;
-        private Drawer plotDrawer;
-        private CancellationTokenSource cancellationTokenSource;
+        private GeneratorSinModel generator;
+        private DrawerModelView drawer;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            SinusoidPlot.Plot.YLabel("Амлитуда");
-            SinusoidPlot.Plot.XLabel("Время (мс)");
+            generator = new GeneratorSinModel();
+            drawer = new DrawerModelView(generator, SinusoidPlot);
+            DataContext = drawer;
         }
 
-        private async void StartButton_Click(object sender, RoutedEventArgs e)
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            double amplitude, frequency;
-            try
+            if (double.TryParse(amplitudeInput.Text, out double amplitude) &&
+                double.TryParse(frequencyInput.Text, out double frequency))
             {
-                amplitude = double.Parse(amplitudeInput.Text);
-                frequency = double.Parse(frequencyInput.Text);
-                if (generatorSin == null)
-                {
-                    generatorSin = new GeneratorSin(amplitude, frequency);
-                    plotDrawer = new Drawer(SinusoidPlot, generatorSin);
-                }
-                cancellationTokenSource = new CancellationTokenSource();
-                var token = cancellationTokenSource.Token;
-                try
-                {
-                    await Task.WhenAll(generatorSin.GenerateDataAsync(token), plotDrawer.plotDrawerAsync(token));
-                }
-                catch (OperationCanceledException) { }
-            }
-            catch
-            {
-                MessageBox.Show(
-                    "Пожалуйста, введите корректные значения для амплитуды и частоты.",
-                    "Ошибка ввода",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                generator.Amplitude = amplitude;
+                generator.Frequency = frequency;
+                generator.StartGenerating();
+                drawer.StartDrawing();
             }
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            cancellationTokenSource.Cancel();
+            generator.StopGenerating();
+            drawer.StopDrawing();
+        }
+
+        private void amplitudeInput_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(amplitudeInput.Text, out double amplitude))
+                generator.Amplitude = amplitude;
+        }
+
+        private void frequencyInput_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(frequencyInput.Text, out double frequency))
+                generator.Frequency = frequency;
         }
     }
 }
