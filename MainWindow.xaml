@@ -7,14 +7,30 @@
         xmlns:local="clr-namespace:Test"
         d:DataContext="{d:DesignInstance Type=local:DrawerModelView}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" MinHeight="450" MinWidth="800">
     <Grid>
-        <ScottPlot:WpfPlot x:Name="SinusoidPlot" Margin="10,10,195,10"/>
-        <Button x:Name="StartButton" Content="Старт" HorizontalAlignment="Left" Margin="591,24,0,0" VerticalAlignment="Top" Height="72" Width="180" Command="{Binding StartCommand}"/>
-        <Button x:Name="StopButton" Content="Стоп" HorizontalAlignment="Left" Margin="591,121,0,0" VerticalAlignment="Top" Height="72" Width="180" Command="{Binding StopCommand}"/>
-        <TextBox x:Name="amplitudeInput" HorizontalAlignment="Left" Margin="591,241,0,0" VerticalAlignment="Top" Width="180" Height="30" TextWrapping="Wrap" Text="{Binding generatorSin.Amplitude, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBox x:Name="frequencyInput" HorizontalAlignment="Left" Margin="591,302,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="30" Text="{Binding generatorSin.Frequency, UpdateSourceTrigger=PropertyChanged}" />
-        <Label Content="Амплитуда" HorizontalAlignment="Left" Margin="591,215,0,0" VerticalAlignment="Top"/>
-        <Label Content="Частота" HorizontalAlignment="Left" Margin="591,276,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.457,0.599"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" MaxHeight="150"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" MaxHeight="150"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ScottPlot:WpfPlot x:Name="SinusoidPlot" Grid.Column="0" Grid.Row="0" Grid.RowSpan="8" Margin="10" />
+
+        <Button x:Name="StartButton" Content="Старт" Grid.Column="1" Grid.Row="0" Height="72" Width="180" Command="{Binding StartCommand}" Margin="10"/>
+        <Button x:Name="StopButton" Content="Стоп" Grid.Column="1" Grid.Row="1" Height="72" Width="180" Command="{Binding StopCommand}" Margin="10"/>
+
+        <Label Content="Амплитуда" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="10"/>
+        <TextBox x:Name="amplitudeInput" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Width="180" Height="30" TextWrapping="Wrap" Text="{Binding generatorSin.Amplitude, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>
+
+        <Label Content="Частота" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Margin="10"/>
+        <TextBox x:Name="frequencyInput" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" Width="180" Height="30" TextWrapping="Wrap" Text="{Binding generatorSin.Frequency, UpdateSourceTrigger=PropertyChanged}" Margin="10"/>
     </Grid>
 </Window>
